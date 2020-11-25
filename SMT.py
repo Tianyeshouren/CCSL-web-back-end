@@ -694,8 +694,8 @@ class SMT:
         self.addHistory()
         self.addTickForever()
         self.addOriginSMTConstraints()
-        # ticktimes = self.historyDict["h_%s" %("q3")]
-        # self.solver.add(ticktimes(bound) > 5 )
+        #ticktimes = self.historyDict["h_%s" %("ts")]
+        #self.solver.add(ticktimes(self.bound) > 5 )
         #tick = self.tickDict["t_%s" %("T5s1")]
         #self.solver.add(tick(1))
         f = open("out.smt2","w")
