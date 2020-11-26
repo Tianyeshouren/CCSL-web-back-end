@@ -217,7 +217,8 @@ class CCSL:
                 cnt += 1
                 self.newCCSLConstraintList.append(["on","tmp%s" %(cnt),m[2],para[3],m[4]])
                 self.newCCSLConstraintList.append(["≤", m[1],"tmp%s" % (cnt)])
-                self.newCCSLConstraintList.append(["<", "tmp%s" %(cnt),1,"tmp%s" % (cnt - 1)])
+                #感觉下面这条约束无必要
+                #self.newCCSLConstraintList.append(["<", "tmp%s" %(cnt),1,"tmp%s" % (cnt - 1)])
                 self.newClocks.add("tmp%s" % (cnt))
                 cnt += 1
             elif m[0] == "∝±":
@@ -226,6 +227,7 @@ class CCSL:
                 self.newCCSLConstraintList.append(["on","tmp%s" %(cnt),"tmp%s" %(cnt + 2),m[4],m[2]])
                 self.newCCSLConstraintList.append(["≤","tmp%s" %(cnt + 2),m[1]])
                 self.newCCSLConstraintList.append(["≤",m[1],"tmp%s" %(cnt + 1)])
+                #下面这条约束也许就是 漂移量必须西小于一半周期的罪魁祸首把？也许
                 self.newCCSLConstraintList.append(["<","tmp%s" %(cnt + 1),1,"tmp%s" %(cnt + 2)])
                 self.newClocks.add("tmp%s" %(cnt))
                 self.newClocks.add("tmp%s" %(cnt + 1))

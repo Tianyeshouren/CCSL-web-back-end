@@ -451,6 +451,7 @@ class SMT:
                 if is_number(each[3]):
                     k = z3.Int("k_%s" %(cnt))
                     self.solver.add(k >= 0, k < int(each[3]))
+                    #self.solver.add(k==0)
                     right = z3.And(tick2(x), history2(x) >= 0, (history2(x) + k) % z3.IntVal(each[3]) == 0)
                     cnt += 1
                     # right = z3.And(tick2(x), history2(x) > 0, (history2(x)) % z3.IntVal(each[3]) == 0)
@@ -695,7 +696,7 @@ class SMT:
         self.addTickForever()
         self.addOriginSMTConstraints()
         #ticktimes = self.historyDict["h_%s" %("ts")]
-        #self.solver.add(ticktimes(self.bound) > 5 )
+        #self.solver.add(ticktimes(self.bound) > 3 )
         #tick = self.tickDict["t_%s" %("T5s1")]
         #self.solver.add(tick(1))
         f = open("out.smt2","w")
