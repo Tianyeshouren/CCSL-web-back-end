@@ -1,46 +1,21 @@
 ts = msec ∝ 7 ± 3
-ts ⊆ tr
-tr1 = tr $ 1
-trf1 = tr - tr1
-trf1 ⊆ ts
-
-tmp ⊆ tr
-ts1 = ts $ 1
-ts1 = tmp $ 1 on tr
-tf = tmp $ 1 on msec
-
-tmp = ts $ p_p1 on tr
-p_p1∈[2,2]
+ts = tr !∝ 3
+tr2 = ts $ 2
+ttmp = tr2 !∝ 3
+tf = ttmp $ 1 on msec
 
 gs = msec ∝ 7 ± 3
-gs ⊆ gr
+gs = gr !∝ 2
 gr1 = gr $ 1
-grf1 = gr - gr1
-grf1 ⊆ gs
-
-gtmp ⊆ gr
-gs1 = gs $ 1
-gs1 = gtmp $ 1 on gr
+gtmp = gr1 !∝ 2
 gf = gtmp $ 1 on msec
-
-gtmp = gs $ p_p3 on gr
-p_p3∈[1,1]
-
 
 
 hs = msec ∝ 7 ± 3
-hs ⊆ hr
+hs = hr ∝ 2
 hr1 = hr $ 1
-hrf1 = hr - hr1
-hrf1 ⊆ hs
-
-htmp ⊆ hr
-hs1 = hs $ 1
-hs1 = htmp $ 1 on hr
+htmp =  hr1 !∝ 2
 hf = htmp $ 1 on msec
-
-htmp = hs $ p_p2 on hr
-p_p2∈[1,1]
 
 
 hr # gr
@@ -54,10 +29,3 @@ hf ≤ gs1
 
 tf ≤ hs
 hf ≤ ts1
-
-
-
-
-
-
-

@@ -472,6 +472,30 @@ class SMT:
                     self.solver.add(z3.ForAll(x, z3.And(
                         z3.Implies(x >= 1, left == right) )))
 
+            elif each[0] == "!∝":
+                tick1 = self.tickDict["t_%s" % (each[1])]
+                tick2 = self.tickDict["t_%s" % (each[2])]
+                history1 = self.historyDict["h_%s" % (each[1])]
+                history2 = self.historyDict["h_%s" % (each[2])]
+                x = z3.Int("x")
+                left = tick1(x)
+                if is_number(each[3]):
+                    right = z3.And(tick2(x), history2(x) >= 0, (history2(x)) % z3.IntVal(each[3]) == 0)
+                    # right = z3.And(tick2(x), history2(x) > 0, (history2(x)) % z3.IntVal(each[3]) == 0)
+                else:
+                    period = z3.Int("%s" % each[3])
+                    tmp = self.parameter[each[3]]
+                    self.printParameter[each[3]] = period
+                    right = z3.And(tick2(x), history2(x) >= 0, (history2(x)) % period == 0)
+                    self.solver.add(period >= int(tmp[2]))
+                    self.solver.add(period <= int(tmp[3]))
+
+                if self.bound > 0:
+                    self.solver.add(z3.ForAll(x, z3.And(
+                        z3.Implies(z3.And(x >= 1, x <= self.n), left == right))))
+                else:
+                    self.solver.add(z3.ForAll(x, z3.And(
+                        z3.Implies(x >= 1, left == right))))
 
             elif each[0] == "☇":
                 tick1 = self.tickDict["t_%s" % (each[1])]

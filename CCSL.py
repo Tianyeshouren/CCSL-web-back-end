@@ -144,6 +144,17 @@ class CCSL:
             self.oldClocks.add(c2)
             self.oldClocks.add(c3)
             self.oldCCSLConstraintList.append(clockTmp)
+        # 增加新的周期，严格没有偏移的周期
+        elif str(each).__contains__("!∝") and "±" not in str(each):
+            tmp = str(each).split("!∝")
+            clockTmp = ["!∝"]
+            clockTmp.extend(tmp[0].split("="))
+            clockTmp.append(tmp[1])
+            c1 = tmp[0].split("=")[0]
+            c2 = tmp[0].split("=")[1]
+            self.oldClocks.add(c1)
+            self.oldClocks.add(c2)
+            self.oldCCSLConstraintList.append(clockTmp)
         elif str(each).__contains__("∝") and "±" in str(each):
             tmp = str(each).split("∝")
             clockTmp = ["∝±"]
