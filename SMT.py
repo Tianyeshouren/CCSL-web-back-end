@@ -311,12 +311,7 @@ class SMT:
                 x = z3.Int("x")
                 if self.bound > 0:
                     for i in range(1, self.bound + 1):
-                        self.solver.add(
-                            z3.Implies(
-                                tick1(i),
-                                z3.And(tick2(i), tick3(i))
-                            )
-                        )
+                        self.solver.add(tick1(i) ==z3.And(tick2(i), tick3(i)))
                     # self.solver.add(z3.ForAll(x, z3.Implies(
                     #         z3.And(x >= 1, x <= self.n),
                     #         tick1(x) == z3.And(tick2(x), tick3(x)))))
@@ -719,8 +714,8 @@ class SMT:
         self.addHistory()
         self.addTickForever()
         self.addOriginSMTConstraints()
-        #ticktimes = self.historyDict["h_%s" %("ts")]
-        #self.solver.add(ticktimes(self.bound) > 3 )
+        ticktimes = self.historyDict["h_%s" %("ef")]
+        self.solver.add(ticktimes(self.bound+1) > 0 )
         #tick = self.tickDict["t_%s" %("T5s1")]
         #self.solver.add(tick(1))
         f = open("out.smt2","w")

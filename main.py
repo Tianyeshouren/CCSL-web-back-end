@@ -79,7 +79,7 @@ def home():
         f.close()
     response = {
         'ccsl': ccslsrc,
-        'result': result,
+         'result': result,
         'time': time,
         'output': html
     }
