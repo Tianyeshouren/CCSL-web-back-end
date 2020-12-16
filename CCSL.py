@@ -228,7 +228,7 @@ class CCSL:
                 cnt += 1
                 self.newCCSLConstraintList.append(["on","tmp%s" %(cnt),m[2],para[3],m[4]])
                 self.newCCSLConstraintList.append(["≤", m[1],"tmp%s" % (cnt)])
-                #感觉下面这条约束无必要
+                #感觉下面这条非常关键，不是没用的
                 #self.newCCSLConstraintList.append(["<", "tmp%s" %(cnt),1,"tmp%s" % (cnt - 1)])
                 self.newClocks.add("tmp%s" % (cnt))
                 cnt += 1

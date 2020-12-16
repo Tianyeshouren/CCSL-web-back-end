@@ -398,14 +398,14 @@ class SMT:
                                 tick2(j), history3(i) - history3(j) == int(each[3])
                             ))
                         self.solver.add(z3.And(tick3(i),z3.Or(t)) == tick1(i))
-                    self.solver.add(z3.ForAll(x,z3.Implies(
-                        z3.And(x > 0,x <= self.n + 1),
-                        history2(x) >= history1(x)
-                    )))
-                    self.solver.add(z3.ForAll(x, z3.Implies(
-                        z3.And(x > 0, x <= self.n,tick1(x)),
-                        tick3(x)
-                    )))
+                    for i in range(1, self.bound + 2):
+                        self.solver.add(history2(i) >= history1(i))
+                    # self.solver.add(z3.ForAll(x,z3.Implies(
+                    #     z3.And(x > 0,x <= self.n + 1),
+                    #     history2(x) >= history1(x)
+                    # )))
+                    for i in range(1, self.bound + 1):
+                        self.solver.add(z3.Implies(tick1(i), tick3(i)))
                     # self.solver.add(
                     #     z3.ForAll(x, z3.Implies(
                     #         z3.And(x > 0, x <= history1(self.bound + 1)),
@@ -441,56 +441,57 @@ class SMT:
                 tick2 = self.tickDict["t_%s" % (each[2])]
                 history1 = self.historyDict["h_%s" % (each[1])]
                 history2 = self.historyDict["h_%s" % (each[2])]
-                x = z3.Int("x")
-                left = tick1(x)
+
                 if is_number(each[3]):
-                    k = z3.Int("k_%s" %(cnt))
+                    k = z3.Int("k_%s" % (cnt))
                     self.solver.add(k >= 0, k < int(each[3]))
-                    #self.solver.add(k==0)
-                    right = z3.And(tick2(x), history2(x) >= 0, (history2(x) + k) % z3.IntVal(each[3]) == 0)
                     cnt += 1
                     # right = z3.And(tick2(x), history2(x) > 0, (history2(x)) % z3.IntVal(each[3]) == 0)
                 else:
                     period = z3.Int("%s" % each[3])
                     tmp = self.parameter[each[3]]
                     self.printParameter[each[3]] = period
-                    k = z3.Int("k_%s" %(cnt))
+                    k = z3.Int("k_%s" % (cnt))
                     self.solver.add(k >= 0, k < period)
-                    right = z3.And(tick2(x), history2(x) >= 0, (history2(x) + k) % period == 0)
+                    # right = z3.And(tick2(x), history2(x) >= 0, (history2(x) + k) % period == 0)
                     self.solver.add(period >= int(tmp[2]))
                     self.solver.add(period <= int(tmp[3]))
                     cnt += 1
                 if self.bound > 0:
-                    self.solver.add(z3.ForAll(x, z3.And(
-                        z3.Implies(z3.And(x >= 1, x <= self.n), left == right))))
-                else:
-                    self.solver.add(z3.ForAll(x, z3.And(
-                        z3.Implies(x >= 1, left == right) )))
+                    if is_number(each[3]):
+                        for i in range(1, self.bound + 1):
+                            self.solver.add(
+                                z3.And(tick2(i), history2(i) >= 0,
+                                       (history2(i) + k) % z3.IntVal(each[3]) == 0) == tick1(i)
+                            )
+                    else:
+                        for i in range(1, self.bound + 1):
+                            self.solver.add(
+                                z3.And(tick2(i), history2(i) >= 0, (history2(x) + k) % period == 0) == tick1(i)
+                            )
 
             elif each[0] == "!∝":
                 tick1 = self.tickDict["t_%s" % (each[1])]
                 tick2 = self.tickDict["t_%s" % (each[2])]
                 history1 = self.historyDict["h_%s" % (each[1])]
                 history2 = self.historyDict["h_%s" % (each[2])]
-                x = z3.Int("x")
-                left = tick1(x)
                 if is_number(each[3]):
-                    right = z3.And(tick2(x), history2(x) >= 0, (history2(x)) % z3.IntVal(each[3]) == 0)
-                    # right = z3.And(tick2(x), history2(x) > 0, (history2(x)) % z3.IntVal(each[3]) == 0)
+                    for i in range(1, self.bound + 1):
+                        self.solver.add(
+                            z3.And(tick2(i), history2(i) >= 0, history2(i) % z3.IntVal(each[3]) == 0) == tick1(i)
+                        )
                 else:
                     period = z3.Int("%s" % each[3])
                     tmp = self.parameter[each[3]]
                     self.printParameter[each[3]] = period
-                    right = z3.And(tick2(x), history2(x) >= 0, (history2(x)) % period == 0)
+                    # right = z3.And(tick2(x), history2(x) >= 0, (history2(x) + k) % period == 0)
                     self.solver.add(period >= int(tmp[2]))
                     self.solver.add(period <= int(tmp[3]))
-
-                if self.bound > 0:
-                    self.solver.add(z3.ForAll(x, z3.And(
-                        z3.Implies(z3.And(x >= 1, x <= self.n), left == right))))
-                else:
-                    self.solver.add(z3.ForAll(x, z3.And(
-                        z3.Implies(x >= 1, left == right))))
+                    cnt += 1
+                    for i in range(1, self.bound + 1):
+                        self.solver.add(
+                            z3.And(tick2(i), history2(i) >= 0, history2(i) % period == 0) == tick1(i)
+                        )
 
             elif each[0] == "☇":
                 tick1 = self.tickDict["t_%s" % (each[1])]
@@ -531,10 +532,8 @@ class SMT:
                 tick2 = self.tickDict["t_%s" % (each[2])]
                 x = z3.Int("x")
                 if self.bound > 0:
-                    self.solver.add(z3.ForAll(x, z3.Implies(
-                        z3.And(x >= 1, x <= self.n),
-                        tick1(x) == tick2(x)
-                    )))
+                    for i in range(1, self.bound + 1):
+                        self.solver.add(tick1(i) == tick2(i))
                 else:
                     self.solver.add(z3.ForAll(x, z3.Implies(
                         x >= 1,
@@ -554,28 +553,16 @@ class SMT:
                 upper = int(each[3]) + int(each[4])
                 x = z3.Int("x")
                 if self.bound > 0:
-                    self.solver.add(
-                        z3.ForAll(
-                            x,
-                            z3.Implies(
-                                z3.And(x >= 1, x <= self.bound + 1,tick1(x)),
-                                history1(tickStep2(history2(x) + upper)) -
-                                history1(tickStep2(history2(x) + lower)) == 1
-                            )
-                        )
-                    )
-                    self.solver.add(
-                        z3.ForAll(
-                            x,
-                            z3.Implies(
-                                z3.And(x >= 2, x <= history1(self.bound + 1)),
-                                z3.And(
-                                    (history2(tickStep1(x)) - history2(tickStep1(x - 1)) >= lower),
-                                    (history2(tickStep1(x)) - history2(tickStep1(x - 1)) <= upper)
-                                )
-                            )
-                        )
-                    )
+                    for i in range(1, bound + 2):
+                        self.solver.add(z3.Implies(tick1(i), history1(tickStep2(history2(i) + upper)) -
+                                                   history1(tickStep2(history2(i) + lower)) == 1))
+                        self.solver.add(z3.Implies(z3.And(i >= 2, i <= history1(self.bound + 1)),
+                                                   z3.And(
+                                                       (history2(tickStep1(i)) - history2(tickStep1(i - 1)) >= lower),
+                                                       (history2(tickStep1(i)) - history2(tickStep1(i - 1)) <= upper)
+                                                   )
+                                                   )
+                                        )
                 else:
                     self.solver.add(
                         z3.ForAll(
