@@ -4,7 +4,7 @@ from z3 import *
 from CCSL import CCSL
 import time
 import random
-
+import json
 
 class SMT:
     def __init__(self, file, bound=0, period=0, realPeroid=0):
@@ -609,7 +609,7 @@ class SMT:
                     TmpTickList.append(str(each)+'_tick')
                 else:
                     TmpTickList.append(str(each)+'_idle')
-            if model.eval(tick(bound)) == True:
+            if model.eval(tick(self.bound)) == True:
                 TmpTickList.append(str(each)+'_tick')
             else:
                 TmpTickList.append(str(each)+'_idle')
