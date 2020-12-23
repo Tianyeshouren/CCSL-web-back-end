@@ -583,6 +583,61 @@ class SMT:
             print("l:\t%s" %self.solver.model()[self.l])
             print("p:\t%s" %self.solver.model()[self.p])
         model = self.solver.model()
+        # echart_Html
+        bd = []
+        clk = []
+        ycatalog = []
+        for i in range(1, self.bound + 2):
+            bd.append(i)
+        bd = str(bd)
+        print(bd)
+        index = 0;
+        tickstr = '['
+        for each in self.oldClocks:
+            clk.append(str(each))
+            ycatalog.append(str(each) + '_idle')
+            ycatalog.append(str(each) + '_tick')
+            dict = {}
+            dict['name'] = str(each)
+            dict['type'] = 'line'
+            dict['step'] = 'end'
+            # for each in self.newClocks:
+            tick = self.tickDict["t_%s" % each]
+            TmpTickList = []
+            for i in range(1, self.bound + 1):
+                if model.eval(tick(i)) == True:
+                    TmpTickList.append(str(each)+'_tick')
+                else:
+                    TmpTickList.append(str(each)+'_idle')
+            if model.eval(tick(bound)) == True:
+                TmpTickList.append(str(each)+'_tick')
+            else:
+                TmpTickList.append(str(each)+'_idle')
+            index = index + 2
+            dict['data'] = TmpTickList
+            j = json.dumps(dict)
+            tickstr += str(j) + ',\n'
+        tickstr = tickstr[:-2]
+        tickstr += ']'
+        clk = str(clk)
+        ycatalog = str(ycatalog)
+        print(ycatalog)
+        print(clk)
+        print(tickstr)
+
+        output_html_echart = ''
+        with open(r'echar1.txt', 'r', encoding='utf-8') as f:
+            output_html_echart = f.read()
+            f.close()
+        output_html_echart = output_html_echart.replace("CLK-DATA", clk,1);
+        output_html_echart =output_html_echart.replace("X-DATA",bd,1);
+        output_html_echart =output_html_echart.replace("Y-DATA",ycatalog,1);
+        output_html_echart =output_html_echart.replace("SCHE-DATA",tickstr,1 );
+
+        with open(r'output_echar.html', 'w', encoding='utf-8') as f:
+            f.write(output_html_echart)
+            f.close()
+
         for each in self.oldClocks:
         # for each in self.newClocks:
             TmpTickList = []
