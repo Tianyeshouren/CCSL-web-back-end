@@ -170,6 +170,32 @@ def queryoutput():
 
     return jsonify(response)
 
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+
+#     clk = ['b', 'c', 'd', 'a']
+#     x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+#     y = ['b_idle', 'b_tick', 'c_idle', 'c_tick', 'd_idle', 'd_tick', 'a_idle', 'a_tick']
+#     sche = [{"name": "b", "type": "line", "step": "end", "data": ["b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_idle", "b_tick", "b_idle", "b_idle", "b_idle"]},
+# {"name": "c", "type": "line", "step": "end", "data": ["c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle", "c_idle"]},
+# {"name": "d", "type": "line", "step": "end", "data": ["d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick", "d_tick"]},
+# {"name": "a", "type": "line", "step": "end", "data": ["a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_tick", "a_idle", "a_tick", "a_tick", "a_tick"]}]
+#     response = {
+#         'CLK': clk,
+#         'X': x,
+#         'Y': y,
+#         'SCHE':sche
+#     }
+    HtmlHeader()
+    smt = SMT("ccsl.txt", bound=40, period=0, realPeroid=0)
+    smt.getAllSchedule()
+    response = smt.getJson()
+    j = json.dumps(response)
+    print(j)
+    p = json.loads(j)
+    return jsonify(p)
+
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
     data = json.loads(request.get_data().decode("utf-8"))

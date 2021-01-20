@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from tools import is_number, HtmlHeader, HTMLFooter
 from z3 import z3
 from z3 import *
@@ -8,6 +10,7 @@ import json
 
 class SMT:
     def __init__(self, file, bound=0, period=0, realPeroid=0):
+        self.response = {}
         self.result = 'unsat'
         self.exetime  = 0
         ccsl = CCSL(file)
@@ -587,10 +590,11 @@ class SMT:
         bd = []
         clk = []
         ycatalog = []
+        sche = []
         for i in range(1, self.bound + 2):
             bd.append(i)
-        bd = str(bd)
-        print(bd)
+        sbd = str(bd)
+        print(sbd)
         index = 0;
         tickstr = '['
         for each in self.oldClocks:
@@ -615,23 +619,25 @@ class SMT:
                 TmpTickList.append(str(each)+'_idle')
             index = index + 2
             dict['data'] = TmpTickList
+            sche.append(dict)
             j = json.dumps(dict)
             tickstr += str(j) + ',\n'
         tickstr = tickstr[:-2]
         tickstr += ']'
-        clk = str(clk)
-        ycatalog = str(ycatalog)
-        print(ycatalog)
-        print(clk)
+        sclk = str(clk)
+        sycatalog = str(ycatalog)
+        print(sycatalog)
+        print(sclk)
         print(tickstr)
+        print(sche)
 
         output_html_echart = ''
         with open(r'echar1.txt', 'r', encoding='utf-8') as f:
             output_html_echart = f.read()
             f.close()
-        output_html_echart = output_html_echart.replace("CLK-DATA", clk,1);
-        output_html_echart =output_html_echart.replace("X-DATA",bd,1);
-        output_html_echart =output_html_echart.replace("Y-DATA",ycatalog,1);
+        output_html_echart = output_html_echart.replace("CLK-DATA", sclk,1);
+        output_html_echart =output_html_echart.replace("X-DATA",sbd,1);
+        output_html_echart =output_html_echart.replace("Y-DATA",sycatalog,1);
         output_html_echart =output_html_echart.replace("SCHE-DATA",tickstr,1 );
 
         with open(r'output_echar.html', 'w', encoding='utf-8') as f:
@@ -655,6 +661,15 @@ class SMT:
             print(each,model.eval(self.printParameter[each]))
         print()
         self.parameterRange.append(t)
+
+        self.response = {
+            'CLK': clk,
+            'X': bd,
+            'Y': ycatalog,
+            'SCHE': sche
+        }
+
+
 
     def outPutTickByHTML(self):
         html = "<div id='dpic'><ul><li class='name'></li>"
@@ -756,8 +771,8 @@ class SMT:
         self.addHistory()
         self.addTickForever()
         self.addOriginSMTConstraints()
-        ticktimes = self.historyDict["h_%s" %("ef")]
-        self.solver.add(ticktimes(self.bound+1) > 0 )
+        #ticktimes = self.historyDict["h_%s" %("ef")]
+        #self.solver.add(ticktimes(self.bound+1) > 0 )
         #tick = self.tickDict["t_%s" %("T5s1")]
         #self.solver.add(tick(1))
         f = open("out.smt2","w")
@@ -803,6 +818,8 @@ class SMT:
 
     def getTime(self):
         return self.exetime
+    def getJson(self):
+        return self.response
 
 
 if __name__ == "__main__":
